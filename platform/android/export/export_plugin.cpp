@@ -465,7 +465,8 @@ void EditorExportPlatformAndroid::_check_for_changes_poll_thread(void *ud) {
 		}
 	}
 
-	if (ea->has_runnable_preset.is_set() && EDITOR_GET("export/android/shutdown_adb_on_exit")) {
+	// The poll thread can outlive EditorSettings when a headless export quits; reading the setting then logs an error.
+	if (ea->has_runnable_preset.is_set() && EditorSettings::get_singleton() && EDITOR_GET("export/android/shutdown_adb_on_exit")) {
 		String adb = AndroidSDKManager::get_adb_path();
 		if (!FileAccess::exists(adb)) {
 			return; //adb not configured
